@@ -2,11 +2,11 @@
 import {
 	ChevronsUpDown,
 	Plus,
-	Settings,
 	MapPin,
 	Check
 } from "lucide-vue-next"
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import {
 	DropdownMenu,
@@ -25,11 +25,10 @@ import {
 } from '@/components/ui/sidebar'
 
 import { useLocationStore } from '@/stores/location'
-import SettingsDialog from '@/components/SettingsDialog.vue'
 
+const router = useRouter()
 const locationStore = useLocationStore()
 const { isMobile } = useSidebar()
-const showSettings = ref(false)
 
 const currentLocationName = computed(() => locationStore.currentLocation?.name || 'Select Location')
 const savedLocations = computed(() => locationStore.savedLocations)
@@ -38,18 +37,12 @@ function selectLocation(loc: any) {
 	locationStore.setCurrentLocation(loc)
 }
 
-// Placeholder for add location - we'll implement the view/logic later
 function goToAddLocation() {
-	console.log('Go to add location')
-}
-
-function openSettings() {
-	showSettings.value = true
+	router.push('/add-location')
 }
 
 </script>
 <template>
-	<SettingsDialog v-model:open="showSettings" />
 	<SidebarMenu>
 		<SidebarMenuItem>
 			<DropdownMenu>
@@ -78,10 +71,6 @@ function openSettings() {
 					<DropdownMenuSeparator />
 					<DropdownMenuItem @click="goToAddLocation">
 						<Plus class="mr-2 size-4" /> Add Location
-					</DropdownMenuItem>
-					<DropdownMenuSeparator />
-					<DropdownMenuItem @click="openSettings">
-						<Settings class="mr-2 size-4" /> Settings
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

@@ -3,12 +3,14 @@
 // TODO: turn this into a component or break it out into multiple
 import { ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
-import { Search, MapPin, X } from 'lucide-vue-next'
+import { Search, MapPin, X, Check } from 'lucide-vue-next'
 import { weatherService, type LocationData } from '@/services/openMeteo'
-import { useSettingsStore, type Location } from '@/stores/settings'
+import { useLocationStore } from '@/stores/location'
 import { Button } from './ui/button'
+import { useRouter } from 'vue-router'
 
-const settings = useSettingsStore()
+const locationStore = useLocationStore()
+const router = useRouter()
 const query = ref('')
 const results = ref<LocationData[]>([])
 const searching = ref(false)
@@ -33,22 +35,15 @@ watch(query, (newVal) => {
 })
 
 function selectLocation(loc: LocationData) {
-  const newLoc: Location = {
-    id: loc.id,
-    name: loc.name,
-    latitude: loc.latitude,
-    longitude: loc.longitude,
-    country: loc.country,
-    admin1: loc.admin1,
-  }
-  settings.addLocation(newLoc)
-  settings.setActiveLocation(newLoc.id)
+  locationStore.addLocation(loc)
+  locationStore.setCurrentLocation(loc)
   query.value = ''
   results.value = []
+  router.push('/')
 }
 
 function removeLocation(id: number) {
-  settings.removeLocation(id)
+  locationStore.removeLocation(id)
 }
 </script>
 <template>
@@ -77,19 +72,25 @@ function removeLocation(id: number) {
     <div class="space-y-2">
       <h3 class="text-sm font-medium text-muted-foreground">Saved Locations</h3>
       <div class="grid gap-2">
-        <div v-for="loc in settings.locations" :key="loc.id"
+        <div v-for="loc in locationStore.savedLocations" :key="loc.id"
           class="flex items-center justify-between p-2 rounded-md border transition-colors cursor-pointer" :class="{
-            'bg-primary/10 border-primary': settings.activeLocationId === loc.id,
-            'hover:bg-accent': settings.activeLocationId !== loc.id
-          }" @click="settings.setActiveLocation(loc.id)">
+            'bg-primary/10 border-primary': locationStore.currentLocation?.id === loc.id,
+            'hover:bg-accent': locationStore.currentLocation?.id !== loc.id
+          }" @click="locationStore.setCurrentLocation(loc)">
           <div class="font-medium text-sm">{{ loc.name }}</div>
-          <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground hover:text-destructive"
-            @click.stop="removeLocation(loc.id)">
-            <X class="w-3 h-3" />
-          </Button>
+          <div class="flex items-center gap-2">
+            <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground hover:text-destructive"
+              @click.stop="selectLocation(loc)">
+              <Check v-if="locationStore.currentLocation?.id === loc.id" class="w-3 h-3 text-primary" />
+            </Button>
+            <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground hover:text-destructive"
+              @click.stop="removeLocation(loc.id)">
+              <X class="w-3 h-3" />
+            </Button>
+          </div>
         </div>
-        <div v-if="settings.locations.length === 0" class="text-sm text-muted-foreground italic"> No locations saved.
-          Search to add one. </div>
+        <div v-if="locationStore.savedLocations.length === 0" class="text-sm text-muted-foreground italic"> No locations
+          saved. Search to add one. </div>
       </div>
     </div>
   </div>

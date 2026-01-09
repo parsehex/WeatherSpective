@@ -54,7 +54,35 @@ export const weatherService = {
 		if (units?.windSpeed) params.wind_speed_unit = units.windSpeed;
 		if (units?.precipitation) params.precipitation_unit = units.precipitation;
 
+		// Create a unique cache key based on params
+		const cacheKey = `weather:${lat}:${lng}:${JSON.stringify(units || {})}`;
+		const cached = localStorage.getItem(cacheKey);
+
+		if (cached) {
+			try {
+				const { data, timestamp } = JSON.parse(cached);
+				// 15 minutes cache expiry
+				if (Date.now() - timestamp < 15 * 60 * 1000) {
+					// console.log('Serving from cache:', cacheKey);
+					return data;
+				}
+			} catch (e) {
+				// failed to parse, ignore
+			}
+		}
+
+		console.log('Fetching fresh data:', cacheKey);
 		const response = await axios.get(BASE_URL, { params });
+
+		// Save to cache
+		localStorage.setItem(
+			cacheKey,
+			JSON.stringify({
+				data: response.data,
+				timestamp: Date.now(),
+			})
+		);
+
 		return response.data;
 	},
 

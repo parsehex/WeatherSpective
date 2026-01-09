@@ -18,8 +18,8 @@ const forecast = computed(() => {
     return {
       date: t,
       day: format(new Date(t), 'EEE'),
-      max: settings.tempUnit === 'celsius' ? max : (max * 9 / 5) + 32,
-      min: settings.tempUnit === 'celsius' ? min : (min * 9 / 5) + 32,
+      max: max,
+      min: min,
       code: weatherCode[index]
     }
   })

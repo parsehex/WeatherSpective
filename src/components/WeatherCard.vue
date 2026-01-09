@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ThumbsUp, ThumbsDown, Loader2 } from 'lucide-vue-next'
+import { ThumbsUp, ThumbsDown, Loader2, ArrowUp } from 'lucide-vue-next'
 import { useWeatherStore } from '@/stores/weather'
 import { useHistoryStore } from '@/stores/history'
 import { useSettingsStore } from '@/stores/settings'
@@ -55,8 +55,13 @@ const windDirection = computed(() => {
   const dir = weather.current.windDirection
   if (dir === undefined) return null
   const compassDirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
-  const idx = Math.round((dir / 360) * 8)
+  const idx = Math.round((dir / 360) * 8) % 8
   return compassDirs[idx]
+})
+
+const windRotation = computed(() => {
+  if (!weather.current?.windDirection) return 0
+  return (weather.current.windDirection + 180) % 360
 })
 </script>
 <template>
@@ -67,17 +72,23 @@ const windDirection = computed(() => {
     <div v-else-if="weather.error" class="text-destructive text-center py-8"> {{ weather.error }} </div>
     <div v-else-if="weather.current" class="text-center space-y-6">
       <div class="space-y-2">
+        <h2 class="text-xl font-medium text-muted-foreground">{{ locationStore.currentLocation?.name }}</h2>
         <h2 class="text-lg font-medium text-muted-foreground">{{ weatherDescription }}</h2>
         <div class="text-6xl font-bold tracking-tighter"> {{ temperature?.toFixed(1) }}{{ unitSymbol }} </div>
         <div class="flex justify-center gap-4 text-md text-muted-foreground">
           <div class="flex items-center gap-1">
             <span>Wind:</span>
-            <span>{{ weather.current.windSpeed }} {{ settings.windSpeedUnit }}</span>
-            <span>{{ windDirection }}</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <span>Gusts:</span>
-            <span>{{ weather.current.windGusts }} {{ settings.windSpeedUnit }}</span>
+            <div class="flex items-center gap-1 mx-2 border border-muted-foreground rounded px-2"
+              title="Wind Direction (Flow)">
+              <ArrowUp :style="{ transform: `rotate(${windRotation}deg)` }"
+                class="w-4 h-4 transition-transform duration-500" />
+              <span>{{ windDirection }}</span>
+            </div>
+            <span>{{ weather.current.windSpeed }} {{ settings.windSpeedUnit }}, </span>
+            <div class="flex items-center gap-1">
+              <span>Gusts:</span>
+              <span>{{ weather.current.windGusts }} {{ settings.windSpeedUnit }}</span>
+            </div>
           </div>
         </div>
         <div class="flex justify-center gap-3">
