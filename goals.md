@@ -1,0 +1,2 @@
+- Display info as graph(s)
+- Display more info
