@@ -47,19 +47,21 @@ function removeLocation(id: number) {
 }
 </script>
 <template>
-  <div class="space-y-4">
+  <div class="space-y-5">
     <div class="relative">
-      <div class="flex items-center border rounded-md px-3 bg-background focus-within:ring-2 ring-primary">
+      <div
+        class="flex items-center rounded-xl border border-border/70 bg-white/80 px-3 shadow-sm focus-within:ring-2 ring-primary">
         <Search class="w-4 h-4 text-muted-foreground mr-2" />
         <input v-model="query"
           class="flex h-10 w-full bg-transparent py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="Search city..." />
       </div>
+      <p v-if="searching" class="mt-2 text-xs text-muted-foreground">Searching locations...</p>
       <!-- Search Results Dropdown -->
       <div v-if="results.length > 0"
-        class="absolute z-10 top-full mt-1 w-full bg-popover text-popover-foreground rounded-md border shadow-md overflow-hidden">
+        class="absolute z-10 top-full mt-2 w-full overflow-hidden rounded-xl border border-border/80 bg-popover text-popover-foreground shadow-lg">
         <button v-for="res in results" :key="res.id"
-          class="w-full text-left px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground flex items-center gap-2"
+          class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
           @click="selectLocation(res)">
           <MapPin class="w-4 h-4" />
           <span>{{ res.name }}</span>
@@ -73,11 +75,11 @@ function removeLocation(id: number) {
       <h3 class="text-sm font-medium text-muted-foreground">Saved Locations</h3>
       <div class="grid gap-2">
         <div v-for="loc in locationStore.savedLocations" :key="loc.id"
-          class="flex items-center justify-between p-2 rounded-md border transition-colors cursor-pointer" :class="{
-            'bg-primary/10 border-primary': locationStore.currentLocation?.id === loc.id,
-            'hover:bg-accent': locationStore.currentLocation?.id !== loc.id
+          class="cursor-pointer rounded-xl border p-3 transition-colors" :class="{
+            'border-primary/50 bg-primary/10': locationStore.currentLocation?.id === loc.id,
+            'border-border/80 bg-white/75 hover:bg-accent/50': locationStore.currentLocation?.id !== loc.id
           }" @click="locationStore.setCurrentLocation(loc)">
-          <div class="font-medium text-sm">{{ loc.name }}</div>
+          <div class="text-sm font-medium">{{ loc.name }}</div>
           <div class="flex items-center gap-2">
             <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground hover:text-destructive"
               @click.stop="selectLocation(loc)">

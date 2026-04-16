@@ -18,20 +18,26 @@ import { RouterView } from 'vue-router'
   <SidebarProvider>
     <AppSidebar />
     <SidebarInset>
-      <header class="bg-background sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        <SidebarTrigger class="-ml-1" />
-        <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
-        <Breadcrumb>
+      <header
+        class="sticky top-0 z-20 flex h-20 shrink-0 items-center gap-3 border-b border-white/40 bg-[linear-gradient(95deg,rgba(246,255,252,0.9),rgba(233,245,252,0.8))] px-4 shadow-sm backdrop-blur-md">
+        <SidebarTrigger class="-ml-1 rounded-full border border-border/80 bg-white/80" />
+        <Separator orientation="vertical" class="mr-1 data-[orientation=vertical]:h-6" />
+        <Breadcrumb class="flex-1">
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbPage>
-                <RouterLink to="/">WeatherSpective</RouterLink>
+                <RouterLink to="/" class="flex items-center gap-3">
+                  <img src="/weatherspective-logo-150px.png" alt="WeatherSpective logo" class="size-10 rounded-full" />
+                  <span class="page-title text-xl font-semibold text-slate-700">WeatherSpective</span>
+                </RouterLink>
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </header>
-      <div class="flex flex-1 flex-col gap-4 p-4">
+      <div class="relative flex flex-1 flex-col gap-4 overflow-hidden px-4 pb-8 pt-6 md:px-6">
+        <div class="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-emerald-300/25 blur-3xl" />
+        <div class="pointer-events-none absolute -right-20 top-12 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" />
         <RouterView />
       </div>
     </SidebarInset>

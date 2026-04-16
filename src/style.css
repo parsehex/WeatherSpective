@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
@@ -42,24 +43,24 @@
 
 :root {
 	--radius: 0.625rem;
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
+	--background: oklch(0.962 0.01 196);
+	--foreground: oklch(0.22 0.03 225);
+	--card: oklch(0.99 0.01 188);
+	--card-foreground: oklch(0.23 0.03 225);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
+	--primary: oklch(0.66 0.18 164);
+	--primary-foreground: oklch(0.99 0.01 180);
+	--secondary: oklch(0.95 0.02 196);
+	--secondary-foreground: oklch(0.25 0.04 220);
+	--muted: oklch(0.94 0.01 210);
+	--muted-foreground: oklch(0.53 0.03 230);
+	--accent: oklch(0.86 0.09 176);
+	--accent-foreground: oklch(0.24 0.03 225);
 	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
-	--ring: oklch(0.708 0 0);
+	--border: oklch(0.85 0.03 196);
+	--input: oklch(0.9 0.02 198);
+	--ring: oklch(0.7 0.14 176);
 	--chart-1: oklch(0.646 0.222 41.116);
 	--chart-2: oklch(0.6 0.118 184.704);
 	--chart-3: oklch(0.398 0.07 227.392);
@@ -114,6 +115,28 @@
 		@apply border-border outline-ring/50;
 	}
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-background text-foreground antialiased;
+		font-family: 'Outfit', sans-serif;
+		background-image:
+			radial-gradient(circle at 12% 20%, rgba(64, 218, 163, 0.2) 0%, transparent 34%),
+			radial-gradient(circle at 84% 2%, rgba(47, 178, 220, 0.15) 0%, transparent 36%),
+			linear-gradient(180deg, rgba(246, 255, 252, 0.95), rgba(236, 245, 248, 0.8));
+		background-attachment: fixed;
+	}
+}
+
+@layer components {
+	.weather-glass {
+		@apply rounded-3xl border border-white/45 bg-white/75 shadow-[0_14px_44px_-24px_rgba(16,76,95,0.55)] backdrop-blur-md;
+	}
+
+	.page-title {
+		font-family: 'Sora', sans-serif;
+		letter-spacing: -0.02em;
+	}
+
+	.metric-card {
+		@apply rounded-3xl border border-white/45 bg-white/75 p-5 shadow-[0_14px_44px_-24px_rgba(16,76,95,0.55)] backdrop-blur-md;
+		background-image: linear-gradient(140deg, rgba(255, 255, 255, 0.82), rgba(231, 255, 247, 0.5));
 	}
 }

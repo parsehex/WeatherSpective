@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
-import { Settings as SettingsIcon } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
 import { useWeatherStore } from '@/stores/weather'
 import LocationManager from '@/components/LocationManager.vue'
 import WeatherCard from '@/components/WeatherCard.vue'
 import ForecastRow from '@/components/ForecastRow.vue'
-import { Button } from '@/components/ui/button'
 import { useLocationStore } from '@/stores/location'
 
 const locationStore = useLocationStore()
 const weather = useWeatherStore()
-const router = useRouter()
 
 // Fetch weather when active location changes
 watch(() => locationStore.currentLocation, (newLoc) => {
@@ -28,15 +24,19 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="container max-w-lg mx-auto p-4 space-y-6">
-    <main class="space-y-6">
-      <LocationManager v-if="!locationStore.currentLocation" />
-      <div v-if="locationStore.currentLocation"
-        class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <div class="container mx-auto max-w-5xl space-y-8 px-1 pb-10">
+    <main class="space-y-8">
+      <section v-if="!locationStore.currentLocation" class="weather-glass p-6">
+        <h2 class="page-title mb-4 text-xl font-semibold text-slate-700">Pick your first location</h2>
+        <LocationManager />
+      </section>
+
+      <div v-if="locationStore.currentLocation" class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <WeatherCard />
         <ForecastRow />
       </div>
-      <footer class="text-center text-xs text-muted-foreground pt-4 pb-2">
+
+      <footer class="pt-2 text-center text-xs text-muted-foreground">
         <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" class="hover:underline"> Weather
           data by Open-Meteo.com </a>
       </footer>

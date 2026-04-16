@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { ThumbsUp, ThumbsDown, Loader2, ArrowUp } from 'lucide-vue-next'
+import { format } from 'date-fns'
 import { useWeatherStore } from '@/stores/weather'
 import { useHistoryStore } from '@/stores/history'
 import { useSettingsStore } from '@/stores/settings'
 import { useLocationStore } from '@/stores/location'
+import { getWeatherDescription } from '@/lib/weatherCodes'
 import { Card } from './ui/card'
 import { Button } from './ui/button'
 
@@ -32,22 +34,10 @@ function rateWeather(rating: 'up' | 'down') {
   })
 }
 
-// Simple weather code mapping for display
 const weatherDescription = computed(() => {
   const code = weather.current?.weatherCode
   if (code === undefined) return ''
-  // WMO Weather interpretation codes (WW)
-  if (code === 0) return 'Clear sky'
-  if (code === 1) return 'Mainly clear'
-  if (code === 2) return 'Partly cloudy'
-  if (code === 3) return 'Overcast'
-  if (code >= 45 && code <= 48) return 'Fog'
-  if (code >= 51 && code <= 55) return 'Drizzle'
-  if (code >= 61 && code <= 65) return 'Rain'
-  if (code >= 71 && code <= 77) return 'Snow'
-  if (code >= 80 && code <= 82) return 'Rain showers'
-  if (code >= 95) return 'Thunderstorm'
-  return 'Unknown'
+  return getWeatherDescription(code)
 })
 
 const windDirection = computed(() => {
@@ -63,42 +53,90 @@ const windRotation = computed(() => {
   if (!weather.current?.windDirection) return 0
   return (weather.current.windDirection + 180) % 360
 })
+
+const visibilityDistance = computed(() => {
+  if (!weather.current) return 0
+  return weather.current.visibility / 1000
+})
+
+const feelsLikeDifference = computed(() => {
+  if (!weather.current) return 0
+  return weather.current.apparentTemperature - weather.current.temperature
+})
+
+const currentConditions = computed(() => {
+  if (!weather.current) return []
+  return [
+    { label: 'Feels Like', value: `${weather.current.apparentTemperature.toFixed(1)}${unitSymbol.value}` },
+    { label: 'Humidity', value: `${Math.round(weather.current.relativeHumidity)}%` },
+    { label: 'Precip Now', value: `${weather.current.precipitation.toFixed(1)} ${settings.precipitationUnit}` },
+    { label: 'UV Index', value: weather.current.uvIndex.toFixed(1) },
+    { label: 'Visibility', value: `${visibilityDistance.value.toFixed(1)} km` },
+    { label: 'Pressure', value: `${Math.round(weather.current.surfacePressure)} hPa` },
+    { label: 'Cloud Cover', value: `${Math.round(weather.current.cloudCover)}%` },
+    { label: 'Dew Point', value: `${weather.current.dewPoint.toFixed(1)}${unitSymbol.value}` }
+  ]
+})
+
+const updatedAt = computed(() => {
+  if (!weather.current?.time) return ''
+  return format(new Date(weather.current.time), 'EEE, h:mm a')
+})
 </script>
 <template>
-  <Card class="p-6 w-full max-w-md mx-auto">
+  <Card class="weather-glass w-full overflow-hidden border-white/55 p-6 md:p-7">
     <div v-if="weather.loading" class="flex justify-center items-center h-40">
       <Loader2 class="w-8 h-8 animate-spin text-primary" />
     </div>
     <div v-else-if="weather.error" class="text-destructive text-center py-8"> {{ weather.error }} </div>
-    <div v-else-if="weather.current" class="text-center space-y-6">
-      <div class="space-y-2">
-        <h2 class="text-xl font-medium text-muted-foreground">{{ locationStore.currentLocation?.name }}</h2>
-        <h2 class="text-lg font-medium text-muted-foreground">{{ weatherDescription }}</h2>
-        <div class="text-6xl font-bold tracking-tighter"> {{ temperature?.toFixed(1) }}{{ unitSymbol }} </div>
-        <div class="flex justify-center gap-4 text-md text-muted-foreground">
-          <div class="flex items-center gap-1">
-            <span>Wind:</span>
-            <div class="flex items-center gap-1 mx-2 border border-muted-foreground rounded px-2"
+    <div v-else-if="weather.current" class="space-y-6">
+      <div class="space-y-3 text-center">
+        <h2 class="page-title text-2xl font-semibold text-slate-700">{{ locationStore.currentLocation?.name }}</h2>
+        <p class="text-sm font-medium uppercase tracking-[0.14em] text-teal-700/80">{{ weatherDescription }}</p>
+        <div class="page-title text-6xl font-semibold tracking-tight text-slate-700 sm:text-7xl"> {{ temperature?.toFixed(1) }}{{ unitSymbol }} </div>
+        <div class="text-sm text-muted-foreground">
+          Feels {{ feelsLikeDifference >= 0 ? 'warmer' : 'cooler' }} by {{ Math.abs(feelsLikeDifference).toFixed(1) }}{{
+            unitSymbol }}
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+          <div class="flex items-center gap-2">
+            <span>Wind</span>
+            <div class="flex items-center gap-1 rounded-full border border-border/80 bg-white/70 px-2 py-0.5"
               title="Wind Direction (Flow)">
               <ArrowUp :style="{ transform: `rotate(${windRotation}deg)` }"
-                class="w-4 h-4 transition-transform duration-500" />
+                class="h-4 w-4 transition-transform duration-500" />
               <span>{{ windDirection }}</span>
             </div>
-            <span>{{ weather.current.windSpeed }} {{ settings.windSpeedUnit }}, </span>
-            <div class="flex items-center gap-1">
-              <span>Gusts:</span>
-              <span>{{ weather.current.windGusts }} {{ settings.windSpeedUnit }}</span>
-            </div>
+          </div>
+          <div>
+            {{ weather.current.windSpeed.toFixed(1) }} {{ settings.windSpeedUnit }}
+            <span class="text-xs">(gusts {{ weather.current.windGusts.toFixed(1) }})</span>
           </div>
         </div>
-        <div class="flex justify-center gap-3">
-          <Button variant="outline" size="lg" class="rounded-full w-14 h-14 p-0" @click="rateWeather('up')">
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div v-for="item in currentConditions" :key="item.label" class="metric-card">
+          <p class="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">{{ item.label }}</p>
+          <p class="page-title mt-2 text-2xl font-medium text-slate-700">{{ item.value }}</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex gap-3">
+          <Button variant="outline" size="lg" class="h-12 w-12 rounded-full border-emerald-200 bg-white/80 p-0"
+            @click="rateWeather('up')">
             <ThumbsUp class="w-6 h-6 text-green-500" />
           </Button>
-          <Button variant="outline" size="lg" class="rounded-full w-14 h-14 p-0" @click="rateWeather('down')">
+          <Button variant="outline" size="lg" class="h-12 w-12 rounded-full border-rose-200 bg-white/80 p-0"
+            @click="rateWeather('down')">
             <ThumbsDown class="w-6 h-6 text-red-500" />
           </Button>
         </div>
+        <p class="text-xs text-muted-foreground">Updated {{ updatedAt }}</p>
       </div>
     </div>
     <div v-else class="text-center py-10 text-muted-foreground"> Select a location to see weather </div>

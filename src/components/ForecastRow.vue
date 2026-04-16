@@ -2,17 +2,16 @@
 import { computed } from 'vue'
 import { format } from 'date-fns'
 import { useWeatherStore } from '@/stores/weather'
-import { useSettingsStore } from '@/stores/settings'
+import { getWeatherDescription } from '@/lib/weatherCodes'
 import { Card } from './ui/card'
 
 const weather = useWeatherStore()
-const settings = useSettingsStore()
 
 const forecast = computed(() => {
   if (!weather.daily) return []
-  const { time, temperatureMax, temperatureMin, weatherCode } = weather.daily
+  const { time, temperatureMax, temperatureMin, weatherCode, precipitationProbability, precipitationSum, uvIndexMax, sunrise, sunset, windSpeedMax } = weather.daily
 
-  return time.slice(0, 5).map((t, index) => {
+  return time.slice(0, 7).map((t, index) => {
     const max = temperatureMax[index] ?? 0
     const min = temperatureMin[index] ?? 0
     return {
@@ -20,23 +19,65 @@ const forecast = computed(() => {
       day: format(new Date(t), 'EEE'),
       max: max,
       min: min,
-      code: weatherCode[index]
+      code: weatherCode[index],
+      precipitationProbability: precipitationProbability[index] ?? 0,
+      precipitationSum: precipitationSum[index] ?? 0,
+      uvIndexMax: uvIndexMax[index] ?? 0,
+      sunrise: sunrise[index] ?? t,
+      sunset: sunset[index] ?? t,
+      windSpeedMax: windSpeedMax[index] ?? 0,
+      description: getWeatherDescription(weatherCode[index] ?? 0)
     }
   })
 })
+
+const hourlyForecast = computed(() => {
+  if (!weather.hourly) return []
+  const { time, temperature, precipitationProbability, weatherCode } = weather.hourly
+
+  return time.slice(0, 12).map((t, index) => ({
+    time: format(new Date(t), 'ha'),
+    temperature: temperature[index] ?? 0,
+    precipitationProbability: precipitationProbability[index] ?? 0,
+    description: getWeatherDescription(weatherCode[index] ?? 0)
+  }))
+})
 </script>
 <template>
-  <Card v-if="forecast.length > 0" class="p-4 w-full max-w-md mx-auto mt-4">
-    <h3 class="text-sm font-medium text-muted-foreground mb-4">5-Day Forecast</h3>
+  <Card v-if="forecast.length > 0" class="weather-glass w-full border-white/55 p-5 md:p-6">
+    <h3 class="page-title mb-4 text-lg font-semibold text-slate-700">7-Day Forecast</h3>
     <div class="space-y-3">
-      <div v-for="day in forecast" :key="day.date" class="flex items-center justify-between text-sm">
-        <div class="w-12 font-medium">{{ day.day }}</div>
-        <div class="flex-1 text-center text-muted-foreground text-xs">
-          <!-- Could add icon here based on day.code -->
+      <div v-for="day in forecast" :key="day.date" class="rounded-2xl border border-white/60 bg-white/70 p-4">
+        <div class="mb-3 flex items-start justify-between gap-3">
+          <div>
+            <p class="text-base font-semibold text-slate-700">{{ day.day }}</p>
+            <p class="text-xs text-muted-foreground">{{ format(new Date(day.date), 'MMM d') }}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-base font-semibold text-slate-700">{{ Math.round(day.max) }}° / {{ Math.round(day.min) }}°</p>
+            <p class="text-xs text-muted-foreground">{{ day.description }}</p>
+          </div>
         </div>
-        <div class="flex gap-4">
-          <span class="font-medium">{{ Math.round(day.max) }}°</span>
-          <span class="text-muted-foreground">{{ Math.round(day.min) }}°</span>
+
+        <div class="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+          <div>Rain chance: <span class="font-medium text-slate-700">{{ Math.round(day.precipitationProbability) }}%</span></div>
+          <div>Precip total: <span class="font-medium text-slate-700">{{ day.precipitationSum.toFixed(1) }}</span></div>
+          <div>Max UV: <span class="font-medium text-slate-700">{{ day.uvIndexMax.toFixed(1) }}</span></div>
+          <div>Sunrise: <span class="font-medium text-slate-700">{{ format(new Date(day.sunrise), 'h:mm a') }}</span></div>
+          <div>Sunset: <span class="font-medium text-slate-700">{{ format(new Date(day.sunset), 'h:mm a') }}</span></div>
+          <div>Peak wind: <span class="font-medium text-slate-700">{{ day.windSpeedMax.toFixed(1) }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="hourlyForecast.length > 0" class="mt-6">
+      <h4 class="mb-3 text-sm font-medium text-muted-foreground">Next 12 hours</h4>
+      <div class="grid auto-cols-[minmax(100px,1fr)] grid-flow-col gap-2 overflow-x-auto pb-1">
+        <div v-for="hour in hourlyForecast" :key="hour.time"
+          class="rounded-xl border border-white/60 bg-white/80 p-3 text-center">
+          <p class="text-xs font-semibold text-slate-700">{{ hour.time }}</p>
+          <p class="page-title mt-1 text-xl text-slate-700">{{ Math.round(hour.temperature) }}°</p>
+          <p class="mt-1 text-[11px] text-muted-foreground">{{ Math.round(hour.precipitationProbability) }}% rain</p>
         </div>
       </div>
     </div>
