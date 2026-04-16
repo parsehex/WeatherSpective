@@ -28,7 +28,8 @@ import { RouterView } from 'vue-router'
               <BreadcrumbPage>
                 <RouterLink to="/" class="flex items-center gap-3">
                   <img src="/weatherspective-logo-150px.png" alt="WeatherSpective logo" class="size-10 rounded-full" />
-                  <span class="page-title text-xl font-semibold text-slate-700">WeatherSpective</span>
+                  <span
+                    class="page-title bg-gradient-to-r from-primary via-emerald-500 to-cyan-500 bg-clip-text text-xl font-semibold text-transparent">WeatherSpective</span>
                 </RouterLink>
               </BreadcrumbPage>
             </BreadcrumbItem>

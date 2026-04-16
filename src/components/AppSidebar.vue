@@ -36,13 +36,6 @@ const showSettings = ref(false)
             <span>Settings</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
-        <SidebarMenuItem class="flex items-center gap-2 select-none">
-          <div class="flex aspect-square size-8 items-center justify-center text-sidebar-primary-foreground">
-            <img src="/weatherspective-logo-150px.png" alt="WeatherSpective" class="size-8" />
-          </div>
-          <span
-            class="font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">WeatherSpective</span>
-        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarFooter>
     <SidebarRail />
