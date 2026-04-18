@@ -13,7 +13,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { RouterView } from 'vue-router'
-import { isLocationLocked } from '@/lib/runtimeConfig'
+import { COMPACT_DISPLAY_QUERY, isLocationLocked } from '@/lib/runtimeConfig'
+import { useLocationStore } from './stores/location'
+import { useMediaQuery } from '@vueuse/core'
+
+const locationStore = useLocationStore()
+const isCompactDisplay = useMediaQuery(COMPACT_DISPLAY_QUERY)
 </script>
 <template>
   <SidebarProvider v-if="!isLocationLocked">
@@ -53,6 +58,7 @@ import { isLocationLocked } from '@/lib/runtimeConfig'
         <span
           class="title-text page-title bg-gradient-to-r from-primary via-emerald-500 to-cyan-500 bg-clip-text text-lg font-semibold text-transparent">WeatherSpective</span>
       </RouterLink>
+      <h2 v-if="locationStore.isLocationLocked" class="page-title text-2xl font-semibold text-slate-700" :class="{ 'text-xl': isCompactDisplay }">{{ locationStore.currentLocation?.name }}</h2>
     </header>
     <div class="app-content relative flex flex-1 flex-col overflow-hidden px-3 pb-4 pt-3 sm:px-4 sm:pb-6 sm:pt-4">
       <div class="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-emerald-300/25 blur-3xl" />
@@ -68,6 +74,9 @@ import { isLocationLocked } from '@/lib/runtimeConfig'
     height: 3rem;
     padding-left: 0.625rem;
     padding-right: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .title-text {

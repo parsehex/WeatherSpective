@@ -96,7 +96,7 @@ const updatedAt = computed(() => {
     <div v-else-if="weather.error" class="text-destructive text-center py-8"> {{ weather.error }} </div>
     <div v-else-if="weather.current" class="space-y-6">
       <div class="space-y-3 text-center">
-        <h2 class="page-title text-2xl font-semibold text-slate-700" :class="{ 'text-xl': isCompactDisplay }">{{ locationStore.currentLocation?.name }}</h2>
+        <h2 v-if="!locationStore.isLocationLocked" class="page-title text-2xl font-semibold text-slate-700" :class="{ 'text-xl': isCompactDisplay }">{{ locationStore.currentLocation?.name }}</h2>
         <p class="text-sm font-medium uppercase tracking-[0.14em] text-teal-700/80">{{ weatherDescription }}</p>
         <div class="page-title text-6xl font-semibold tracking-tight text-slate-700 sm:text-7xl" :class="{ 'text-4xl': isCompactDisplay }"> {{ temperature?.toFixed(1) }}{{ unitSymbol }} </div>
         <div class="text-sm text-muted-foreground">
