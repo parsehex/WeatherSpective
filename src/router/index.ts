@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
 import HomeView from '@/views/HomeView.vue';
+import { isLocationLocked } from '@/lib/runtimeConfig';
 
 const isProjectBase = import.meta.env.BASE_URL !== '/';
 
@@ -19,6 +20,14 @@ const router = createRouter({
 			component: () => import('@/views/SearchLocationView.vue'),
 		},
 	],
+});
+
+router.beforeEach((to) => {
+	if (isLocationLocked && to.name === 'add-location') {
+		return { name: 'home' };
+	}
+
+	return true;
 });
 
 export default router;
