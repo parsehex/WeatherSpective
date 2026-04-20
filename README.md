@@ -43,13 +43,3 @@ For small landscape displays (like 480x320), the UI automatically switches to a 
 - 3-day forecast and 6-hour hourly strip for readability.
 
 The default desktop and normal mobile layouts remain unchanged outside that compact breakpoint.
-
-## Disable PWA (Optional)
-
-For kiosk/browser-only deployments where you do not want service workers or PWA files, set:
-
-```env
-VITE_ENABLE_PWA=false
-```
-
-When this is false, the PWA plugin is skipped during build.
