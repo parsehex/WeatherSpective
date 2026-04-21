@@ -51,6 +51,7 @@ const lockedLocationRaw = import.meta.env.VITE_LOCKED_LOCATION?.trim()
 const lockedTempUnitRaw = import.meta.env.VITE_LOCKED_TEMPERATURE_UNIT
 const lockedWindUnitRaw = import.meta.env.VITE_LOCKED_WIND_SPEED_UNIT
 const lockedPrecipUnitRaw = import.meta.env.VITE_LOCKED_PRECIPITATION_UNIT
+const parseboxControlsUrlRaw = import.meta.env.VITE_PARSEBOX_CONTROLS_URL?.trim()
 
 export const lockedLocation = parseLockedLocation(lockedLocationRaw)
 export const isLocationLocked = lockedLocation !== null
@@ -69,3 +70,7 @@ export const hasAnySettingsLock =
 export const hasInvalidTemperatureUnitLockConfig = Boolean(lockedTempUnitRaw?.trim()) && !isTemperatureUnitLocked
 export const hasInvalidWindSpeedUnitLockConfig = Boolean(lockedWindUnitRaw?.trim()) && !isWindSpeedUnitLocked
 export const hasInvalidPrecipitationUnitLockConfig = Boolean(lockedPrecipUnitRaw?.trim()) && !isPrecipitationUnitLocked
+
+export const parseboxControlsUrl = parseboxControlsUrlRaw && parseboxControlsUrlRaw.length > 0
+  ? parseboxControlsUrlRaw
+  : '/controls'
