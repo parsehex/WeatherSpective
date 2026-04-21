@@ -73,4 +73,4 @@ export const hasInvalidPrecipitationUnitLockConfig = Boolean(lockedPrecipUnitRaw
 
 export const parseboxControlsUrl = parseboxControlsUrlRaw && parseboxControlsUrlRaw.length > 0
   ? parseboxControlsUrlRaw
-  : '/controls'
+  : 'http://127.0.0.1:4174/controls'
