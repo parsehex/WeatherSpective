@@ -74,7 +74,7 @@ function closeControls() {
     <div class="app-content relative flex flex-1 flex-col overflow-hidden px-3 pb-4 pt-3 sm:px-4 sm:pb-6 sm:pt-4">
       <div class="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-emerald-300/25 blur-3xl" />
       <div class="pointer-events-none absolute -right-20 top-12 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" />
-      <RouterView />
+      <RouterView class="kiosk-router-view" />
 
       <section v-if="isControlsOpen" class="controls-overlay" aria-label="ParseBox controls">
         <header class="controls-header">
@@ -102,6 +102,13 @@ function closeControls() {
   background: rgba(36, 109, 96, 0.13);
   color: #1f3f63;
   font-weight: 600;
+}
+
+.kiosk-router-view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .controls-overlay {

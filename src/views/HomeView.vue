@@ -4,6 +4,7 @@ import { useWeatherStore } from '@/stores/weather'
 import LocationManager from '@/components/LocationManager.vue'
 import WeatherCard from '@/components/WeatherCard.vue'
 import ForecastRow from '@/components/ForecastRow.vue'
+import KioskHomeView from '@/views/KioskHomeView.vue'
 import { useLocationStore } from '@/stores/location'
 import { hasInvalidLockedLocationConfig, isLocationLocked } from '@/lib/runtimeConfig'
 
@@ -25,14 +26,18 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="home-shell container mx-auto max-w-5xl space-y-8 px-1 pb-10">
+  <!-- Kiosk mode: dedicated 2-panel layout -->
+  <KioskHomeView v-if="isLocationLocked" class="kiosk-fill" />
+
+  <!-- Normal mode: scrollable vertical layout -->
+  <div v-else class="home-shell container mx-auto max-w-5xl space-y-8 px-1 pb-10">
     <main class="home-main space-y-8">
-      <section v-if="!locationStore.currentLocation && !isLocationLocked" class="weather-glass p-6">
+      <section v-if="!locationStore.currentLocation" class="weather-glass p-6">
         <h2 class="page-title mb-4 text-xl font-semibold text-slate-700">Pick your first location</h2>
         <LocationManager />
       </section>
 
-      <section v-else-if="!locationStore.currentLocation && hasInvalidLockedLocationConfig" class="weather-glass p-4 text-sm text-muted-foreground">
+      <section v-else-if="hasInvalidLockedLocationConfig" class="weather-glass p-4 text-sm text-muted-foreground">
         Locked location config is invalid. Set a valid JSON object in VITE_LOCKED_LOCATION.
       </section>
 
@@ -50,6 +55,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.kiosk-fill {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
 @media (max-width: 560px) and (max-height: 380px) {
   .home-shell {
     padding-bottom: 0.4rem;
