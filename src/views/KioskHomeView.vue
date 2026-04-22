@@ -4,7 +4,6 @@ import { format } from 'date-fns'
 import { ArrowUp, Loader2 } from 'lucide-vue-next'
 import { useWeatherStore } from '@/stores/weather'
 import { useSettingsStore } from '@/stores/settings'
-import { useLocationStore } from '@/stores/location'
 import { getWeatherDescription } from '@/lib/weatherCodes'
 
 type SubView = 'hourly' | 'daily' | 'details'
@@ -12,7 +11,11 @@ const activeView = ref<SubView>('hourly')
 
 const weather = useWeatherStore()
 const settings = useSettingsStore()
-const locationStore = useLocationStore()
+
+function formatClock(value: string | undefined): string {
+  if (!value) return '--:--'
+  return format(new Date(value), 'h:mm a')
+}
 
 const unitSymbol = computed(() => settings.temperatureUnit === 'celsius' ? '°C' : '°F')
 
@@ -87,8 +90,8 @@ const detailItems = computed(() => {
   ]
   if (today) {
     items.push(
-      { label: 'Sunrise', value: format(new Date(today.sunrise[0] ?? today.time[0]), 'h:mm a') },
-      { label: 'Sunset', value: format(new Date(today.sunset[0] ?? today.time[0]), 'h:mm a') },
+      { label: 'Sunrise', value: formatClock(today.sunrise[0] ?? today.time[0]) },
+      { label: 'Sunset', value: formatClock(today.sunset[0] ?? today.time[0]) },
     )
   }
   return items
@@ -243,7 +246,7 @@ const detailItems = computed(() => {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: theme('colors.teal.700 / 80%');
+  color: rgba(15, 118, 110, 0.8);
 }
 
 .kiosk-temp {
@@ -251,14 +254,14 @@ const detailItems = computed(() => {
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: theme('colors.slate.700');
-  font-family: theme('fontFamily.sans');
+  color: #334155;
+  font-family: "Mona Sans", "IBM Plex Sans", "Segoe UI", sans-serif;
 }
 
 .kiosk-feels {
   margin: 0;
   font-size: 0.82rem;
-  color: theme('colors.muted.foreground');
+  color: #64748b;
 }
 
 .kiosk-wind {
@@ -266,7 +269,7 @@ const detailItems = computed(() => {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.85rem;
-  color: theme('colors.muted.foreground');
+  color: #64748b;
   flex-wrap: wrap;
 }
 
@@ -275,8 +278,8 @@ const detailItems = computed(() => {
   align-items: center;
   gap: 0.25rem;
   border-radius: 999px;
-  border: 1px solid theme('colors.border / 80%');
-  background: theme('colors.white / 70%');
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  background: rgba(255, 255, 255, 0.7);
   padding: 0.15rem 0.55rem;
 }
 
@@ -288,7 +291,7 @@ const detailItems = computed(() => {
 
 .wind-speed {
   font-weight: 600;
-  color: theme('colors.slate.700');
+  color: #334155;
 }
 
 .wind-gusts {
@@ -307,8 +310,8 @@ const detailItems = computed(() => {
   flex-direction: column;
   gap: 0.1rem;
   border-radius: 0.75rem;
-  border: 1px solid theme('colors.white / 60%');
-  background: theme('colors.white / 70%');
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.7);
   padding: 0.45rem 0.6rem;
 }
 
@@ -317,21 +320,21 @@ const detailItems = computed(() => {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: theme('colors.muted.foreground');
+  color: #64748b;
 }
 
 .metric-value {
   font-size: 1rem;
   font-weight: 600;
-  color: theme('colors.slate.700');
+  color: #334155;
   line-height: 1.2;
-  font-family: theme('fontFamily.sans');
+  font-family: "Mona Sans", "IBM Plex Sans", "Segoe UI", sans-serif;
 }
 
 .kiosk-updated {
   margin: 0;
   font-size: 0.72rem;
-  color: theme('colors.muted.foreground');
+  color: #64748b;
 }
 
 /* ── Right panel ─────────────────────────────────────────────────────────── */
@@ -351,21 +354,21 @@ const detailItems = computed(() => {
 .tab-btn {
   padding: 0.4rem 1.1rem;
   border-radius: 999px;
-  border: 1px solid theme('colors.border / 80%');
-  background: theme('colors.white / 60%');
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  background: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
   font-weight: 600;
-  color: theme('colors.slate.600');
+  color: #475569;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   backdrop-filter: blur(6px);
 }
 
 .tab-btn.active {
-  background: linear-gradient(135deg, theme('colors.emerald.400'), theme('colors.cyan.400'));
+  background: linear-gradient(135deg, #34d399, #22d3ee);
   border-color: transparent;
-  color: theme('colors.white');
-  box-shadow: 0 2px 8px theme('colors.emerald.400 / 35%');
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(52, 211, 153, 0.35);
 }
 
 .subview-content {
@@ -397,27 +400,27 @@ const detailItems = computed(() => {
 .hour-time {
   font-size: 0.72rem;
   font-weight: 700;
-  color: theme('colors.slate.600');
+  color: #475569;
   text-transform: lowercase;
 }
 
 .hour-temp {
   font-size: 1.1rem;
   font-weight: 700;
-  color: theme('colors.slate.700');
+  color: #334155;
   line-height: 1;
-  font-family: theme('fontFamily.sans');
+  font-family: "Mona Sans", "IBM Plex Sans", "Segoe UI", sans-serif;
 }
 
 .hour-pop {
   font-size: 0.7rem;
-  color: theme('colors.cyan.700');
+  color: #0e7490;
   font-weight: 600;
 }
 
 .hour-desc {
   font-size: 0.62rem;
-  color: theme('colors.muted.foreground');
+  color: #64748b;
   text-align: center;
   line-height: 1.2;
   display: -webkit-box;
@@ -453,18 +456,18 @@ const detailItems = computed(() => {
 .day-dow {
   font-size: 0.9rem;
   font-weight: 700;
-  color: theme('colors.slate.700');
+  color: #334155;
 }
 
 .day-date {
   font-size: 0.68rem;
-  color: theme('colors.muted.foreground');
+  color: #64748b;
 }
 
 .day-desc {
   flex: 1;
   font-size: 0.8rem;
-  color: theme('colors.slate.600');
+  color: #475569;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -473,14 +476,14 @@ const detailItems = computed(() => {
 .day-temps {
   font-size: 0.9rem;
   font-weight: 700;
-  color: theme('colors.slate.700');
+  color: #334155;
   white-space: nowrap;
-  font-family: theme('fontFamily.sans');
+  font-family: "Mona Sans", "IBM Plex Sans", "Segoe UI", sans-serif;
 }
 
 .day-pop {
   font-size: 0.75rem;
-  color: theme('colors.cyan.700');
+  color: #0e7490;
   font-weight: 600;
   white-space: nowrap;
   min-width: 4.5rem;
@@ -489,7 +492,7 @@ const detailItems = computed(() => {
 
 .day-wind {
   font-size: 0.75rem;
-  color: theme('colors.muted.foreground');
+  color: #64748b;
   white-space: nowrap;
   min-width: 3.5rem;
   text-align: right;
@@ -519,13 +522,13 @@ const detailItems = computed(() => {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: theme('colors.muted.foreground');
+  color: #64748b;
 }
 
 .detail-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: theme('colors.slate.700');
-  font-family: theme('fontFamily.sans');
+  color: #334155;
+  font-family: "Mona Sans", "IBM Plex Sans", "Segoe UI", sans-serif;
 }
 </style>
